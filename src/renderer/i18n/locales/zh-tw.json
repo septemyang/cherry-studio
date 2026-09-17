@@ -892,6 +892,7 @@
   "chat.topics.title": "對話",
   "chat.topics.unpin": "取消固定",
   "chat.translate": "翻譯",
+  "chat.question_history": "歷史提問",
   "chat.user": "使用者",
   "chat.web_search.warning.openai": "GPT-5 模型的最小推理力度不支援網路搜尋。",
   "code.add_provider_hint": "在 設定 → 模型服務 新增供應商",

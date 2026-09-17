@@ -892,6 +892,7 @@
   "chat.topics.title": "Tema",
   "chat.topics.unpin": "Quitar fijación",
   "chat.translate": "Traducir",
+  "chat.question_history": "Historial de preguntas",
   "chat.user": "Usuario",
   "chat.web_search.warning.openai": "El modelo GPT5 con intensidad de pensamiento mínima no admite búsqueda en la web.",
   "code.add_provider_hint": "Añadir proveedor en Configuración → Servicio de modelo",

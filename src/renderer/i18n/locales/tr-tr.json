@@ -892,6 +892,7 @@
   "chat.topics.title": "Konuşmalar",
   "chat.topics.unpin": "Konuşmanın Sabitlemesini Kaldır",
   "chat.translate": "Çevir",
+  "chat.question_history": "Soru geçmişi",
   "chat.user": "Kullanıcı",
   "chat.web_search.warning.openai": "GPT-5 modelinin minimum akıl yürütme çabası web aramasını desteklemiyor.",
   "code.add_provider_hint": "Ayarlar → Model Hizmeti bölümünde sağlayıcı ekleyin",

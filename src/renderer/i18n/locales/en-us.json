@@ -892,6 +892,7 @@
   "chat.topics.title": "Conversations",
   "chat.topics.unpin": "Unpin Conversation",
   "chat.translate": "Translate",
+  "chat.question_history": "Question history",
   "chat.user": "User",
   "chat.web_search.warning.openai": "The GPT-5 model's minimal reasoning effort does not support web search.",
   "code.add_provider_hint": "Add provider in Settings → Model Service",

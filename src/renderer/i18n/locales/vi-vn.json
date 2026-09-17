@@ -892,6 +892,7 @@
   "chat.topics.title": "Chủ đề",
   "chat.topics.unpin": "Bỏ ghim chủ đề",
   "chat.translate": "Dịch",
+  "chat.question_history": "Lịch sử câu hỏi",
   "chat.user": "Người dùng",
   "chat.web_search.warning.openai": "Mô hình GPT-5 với nỗ lực suy luận tối thiểu không hỗ trợ tìm kiếm web.",
   "code.add_provider_hint": "Thêm nhà cung cấp trong Cài đặt → Dịch vụ Mô hình",

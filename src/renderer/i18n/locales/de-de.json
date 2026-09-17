@@ -892,6 +892,7 @@
   "chat.topics.title": "Thema",
   "chat.topics.unpin": "Anheften aufheben",
   "chat.translate": "Übersetzen",
+  "chat.question_history": "Fragenverlauf",
   "chat.user": "Benutzer",
   "chat.web_search.warning.openai": "GPT5-Modell mit minimaler Denkstärke unterstützt keine Websuche",
   "code.add_provider_hint": "Anbieter in Einstellungen → Modell-Dienst hinzufügen",

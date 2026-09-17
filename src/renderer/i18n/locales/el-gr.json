@@ -892,6 +892,7 @@
   "chat.topics.title": "Θέματα",
   "chat.topics.unpin": "Κατάργηση σταθεροποίησης",
   "chat.translate": "Μετάφραση",
+  "chat.question_history": "Ιστορικό ερωτήσεων",
   "chat.user": "Χρήστης",
   "chat.web_search.warning.openai": "Το μοντέλο GPT5 με ελάχιστη ένταση σκέψης δεν υποστηρίζει αναζήτηση στο διαδίκτυο",
   "code.add_provider_hint": "Προσθήκη παρόχου στις Ρυθμίσεις → Υπηρεσία μοντέλου",

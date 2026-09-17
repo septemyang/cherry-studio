@@ -1,9 +1,10 @@
-import { Activity, GitBranch } from 'lucide-react'
+import { Activity, GitBranch, History } from 'lucide-react'
 import type { PropsWithChildren } from 'react'
 import { createContext, lazy, Suspense, use, useCallback, useMemo, useRef, useSyncExternalStore } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import type { TopicMessageFlowLiveState } from '@renderer/components/chat/flow'
+import { QuestionHistoryPanel } from '@renderer/components/chat/panes/QuestionHistoryPanel'
 import {
   createResourcePaneCapability,
   RESOURCE_PANE_TAB,
@@ -40,6 +41,7 @@ interface TopicRightPaneViewportCallbacks {
 interface TopicRightPanelScope extends TopicRightPaneMeta {
   branchTitle: string
   developerMode: boolean
+  historyTitle: string
   resourcePane: ResourcePaneConfig | null
   traceTitle: string
 }
@@ -139,6 +141,12 @@ function TopicBranchRightPanel({ active, scope }: RightPanelComponentProps<Topic
   )
 }
 
+function TopicQuestionHistoryPanel({ active, scope }: RightPanelComponentProps<TopicRightPanelScope>) {
+  const { onLocateMessage } = useTopicRightPaneViewport()
+  if (!active || !scope.topicId) return null
+  return <QuestionHistoryPanel key={scope.topicId} topicId={scope.topicId} onLocateMessage={onLocateMessage} />
+}
+
 function TopicTraceRightPanel({ active, scope }: RightPanelComponentProps<TopicRightPanelScope>) {
   if (!active) return null
   return (
@@ -172,7 +180,16 @@ const TOPIC_RIGHT_PANEL_CAPABILITIES = [
       canMaximize: true
     })
   },
-  TOPIC_TRACE_PANE_CAPABILITY
+  TOPIC_TRACE_PANE_CAPABILITY,
+  {
+    component: TopicQuestionHistoryPanel,
+    resolve: (scope) => ({
+      id: 'question-history',
+      instanceKey: `question-history:${scope.topicId ?? ''}`,
+      title: scope.historyTitle,
+      readiness: scope.topicId ? 'ready' : 'unavailable'
+    })
+  }
 ] satisfies readonly RightPanelCapability<TopicRightPanelScope>[]
 
 function TopicRightPaneProvider({
@@ -207,6 +224,7 @@ function TopicRightPaneProvider({
       traceId,
       resourcePane: resourcePane ?? null,
       developerMode: enableDeveloperMode,
+      historyTitle: t('chat.question_history'),
       branchTitle: t('chat.message.flow.title'),
       traceTitle: t('trace.label')
     }),
@@ -243,6 +261,11 @@ function TopicRightPaneShortcuts() {
 
   return (
     <>
+      <RightPanelShortcut
+        tab="question-history"
+        label={t('chat.question_history')}
+        icon={<History className="size-3.5" />}
+      />
       <RightPanelShortcut tab="branch" label={t('chat.message.flow.title')} icon={<GitBranch className="size-3.5" />} />
       <RightPanelShortcut tab={TRACE_PANE_ID} label={t('trace.label')} icon={<Activity className="size-3.5" />} />
     </>

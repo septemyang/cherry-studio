@@ -892,6 +892,7 @@
   "chat.topics.title": "Tópicos",
   "chat.topics.unpin": "Desfixar",
   "chat.translate": "Traduzir",
+  "chat.question_history": "Histórico de perguntas",
   "chat.user": "Utilizador",
   "chat.web_search.warning.openai": "O modelo GPT5 com intensidade mínima de pensamento não suporta pesquisa na web",
   "code.add_provider_hint": "Adicione fornecedor em Configurações → Serviço de Modelo",

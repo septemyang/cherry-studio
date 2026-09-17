@@ -892,6 +892,7 @@
   "chat.topics.title": "Subiecte",
   "chat.topics.unpin": "Detașează subiectul",
   "chat.translate": "Tradu",
+  "chat.question_history": "Istoricul întrebărilor",
   "chat.user": "Utilizator",
   "chat.web_search.warning.openai": "Efortul minim de raționament al modelului GPT-5 nu acceptă căutarea web.",
   "code.add_provider_hint": "Adaugă un furnizor în Setări → Serviciu de modele",

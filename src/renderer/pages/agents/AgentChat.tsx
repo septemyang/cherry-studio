@@ -126,6 +126,7 @@ interface AgentChatProps {
 }
 
 interface AgentChatLayoutProps {
+  onLocateHistoryMessage?: (messageId: string) => void
   activeAgent?: GetAgentResponse
   /** Active model — the right pane needs it for the context-usage denominator. */
   model?: Model
@@ -165,8 +166,8 @@ const AgentChat = ({
   showResourceListControls = true,
   sidebarOpen,
   onSidebarToggle,
-  locateMessageId,
-  onLocateMessageHandled,
+  locateMessageId: externalLocateMessageId,
+  onLocateMessageHandled: onExternalLocateMessageHandled,
   onPaneCollapse,
   onPaneAutoCollapseChange,
   onFileNavigationRequestChange,
@@ -195,6 +196,19 @@ const AgentChat = ({
     'agent.model_switch_confirmation.skipped'
   )
   const currentSessionId = conversationBootstrap.session?.id
+  const [historyLocate, setHistoryLocate] = useState<{ sessionId?: string; messageId: string }>()
+  const historyLocateMessageId = historyLocate?.sessionId === currentSessionId ? historyLocate?.messageId : undefined
+  const locateMessageId = externalLocateMessageId ?? historyLocateMessageId
+  const onLocateMessageHandled = useCallback(() => {
+    if (externalLocateMessageId) onExternalLocateMessageHandled?.()
+    else setHistoryLocate(undefined)
+  }, [externalLocateMessageId, onExternalLocateMessageHandled])
+  const onLocateHistoryMessage = useCallback(
+    (messageId: string) => {
+      setHistoryLocate({ sessionId: currentSessionId, messageId })
+    },
+    [currentSessionId]
+  )
   const [citationPanelState, setCitationPanelState] = useState<CitationPanelState | null>(null)
   const [shouldMountCitationsPanel, setShouldMountCitationsPanel] = useState(false)
   const [modelSwitchTarget, setModelSwitchTarget] = useState<ModelSwitchTarget>()
@@ -542,7 +556,7 @@ const AgentChat = ({
 
   return (
     <>
-      <AgentChatLayout {...layoutProps} />
+      <AgentChatLayout {...layoutProps} onLocateHistoryMessage={onLocateHistoryMessage} />
       {canReviewDiagnosticReport && activeDiagnosticReportDraft ? (
         <DiagnosticUploadDialog
           key={activeDiagnosticReportDraft.sessionId}
@@ -696,6 +710,7 @@ const AgentChatSessionCenter = ({
 }
 
 function AgentChatLayout({
+  onLocateHistoryMessage,
   activeAgent,
   model,
   center,
@@ -765,7 +780,7 @@ function AgentChatLayout({
           <ChatLayoutModeProvider>{center}</ChatLayoutModeProvider>
         }
         sidePanel={sidePanel}
-        rightPane={<AgentRightPane.Viewport />}
+        rightPane={<AgentRightPane.Viewport onLocateMessage={onLocateHistoryMessage} />}
         centerId={centerSurface?.id}
         centerRef={centerSurface?.ref}
         centerClassName={centerClassName}

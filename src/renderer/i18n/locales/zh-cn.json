@@ -892,6 +892,7 @@
   "chat.topics.title": "对话",
   "chat.topics.unpin": "取消固定",
   "chat.translate": "翻译",
+  "chat.question_history": "历史提问",
   "chat.user": "用户",
   "chat.web_search.warning.openai": "GPT5 模型 minimal 思考强度不支持网络搜索",
   "code.add_provider_hint": "在 设置 → 模型服务 添加服务商",

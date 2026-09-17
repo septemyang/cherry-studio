@@ -892,6 +892,7 @@
   "chat.topics.title": "Топики",
   "chat.topics.unpin": "Открепить беседу",
   "chat.translate": "Перевести",
+  "chat.question_history": "История вопросов",
   "chat.user": "Пользователь",
   "chat.web_search.warning.openai": "Модель GPT5 с минимальной интенсивностью мышления не поддерживает поиск в интернете",
   "code.add_provider_hint": "Добавьте провайдера в Настройки → Служба моделей",

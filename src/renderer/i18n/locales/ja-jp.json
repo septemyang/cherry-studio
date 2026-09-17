@@ -892,6 +892,7 @@
   "chat.topics.title": "トピック",
   "chat.topics.unpin": "固定解除",
   "chat.translate": "翻訳",
+  "chat.question_history": "質問履歴",
   "chat.user": "ユーザー",
   "chat.web_search.warning.openai": "GPT5モデルの最小思考強度ではネット検索はサポートされません",
   "code.add_provider_hint": "設定 → モデルサービス でプロバイダーを追加",

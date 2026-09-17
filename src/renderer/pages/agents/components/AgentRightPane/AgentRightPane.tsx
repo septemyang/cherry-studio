@@ -14,7 +14,7 @@ import {
   Waypoints,
   Workflow
 } from 'lucide-react'
-import { Globe2 } from 'lucide-react'
+import { Globe2, History } from 'lucide-react'
 import type { ReactNode } from 'react'
 import {
   createContext,
@@ -51,6 +51,7 @@ import {
   getArtifactPaneSelectionPath,
   resolveArtifactPaneFileSelection
 } from '@renderer/components/chat/panes/ArtifactPane'
+import { QuestionHistoryPanel } from '@renderer/components/chat/panes/QuestionHistoryPanel'
 import {
   createResourcePaneCapability,
   RESOURCE_PANE_TAB,
@@ -263,6 +264,7 @@ interface AgentRightPanelScope {
   hasSystemWorkspaceFiles: boolean
   filesTitle: string
   flowTab: AgentFlowTab | null
+  historyTitle: string
   meta: AgentRightPaneMeta
   resourcePane: ResourcePaneConfig | null
   statusTitle: string
@@ -803,6 +805,7 @@ function AgentRightPaneStateProvider({
   )
   const scope = useMemo<AgentRightPanelScope>(
     () => ({
+      historyTitle: t('chat.question_history'),
       browserTitle: t('agent.right_pane.tabs.browser'),
       developerMode: enableDeveloperMode,
       hasSystemWorkspaceFiles,
@@ -1517,6 +1520,15 @@ const AGENT_RIGHT_PANEL_CAPABILITIES = [
   },
   AGENT_BROWSER_PANE_CAPABILITY,
   {
+    component: AgentQuestionHistoryPanel,
+    resolve: (scope) => ({
+      id: 'question-history',
+      instanceKey: `question-history:${scope.meta.sessionId ?? ''}`,
+      title: scope.historyTitle,
+      readiness: scope.meta.sessionId ? scope.meta.conversationState : 'unavailable'
+    })
+  },
+  {
     component: AgentStatusRightPanel,
     resolve: (scope) => ({
       id: STATUS_PANE_ID,
@@ -1541,8 +1553,30 @@ const AGENT_RIGHT_PANEL_CAPABILITIES = [
   }
 ] satisfies readonly RightPanelCapability<AgentRightPanelScope>[]
 
-const AgentRightPaneViewport = memo(function AgentRightPaneViewport() {
-  return <RightPanelViewport />
+const AgentHistoryLocateContext = createContext<((messageId: string) => void) | undefined>(undefined)
+
+function AgentQuestionHistoryPanel({ active, scope }: RightPanelComponentProps<AgentRightPanelScope>) {
+  const onLocateMessage = use(AgentHistoryLocateContext)
+  if (!active || !scope.meta.sessionId) return null
+  return (
+    <QuestionHistoryPanel
+      key={scope.meta.sessionId}
+      sessionId={scope.meta.sessionId}
+      onLocateMessage={onLocateMessage}
+    />
+  )
+}
+
+const AgentRightPaneViewport = memo(function AgentRightPaneViewport({
+  onLocateMessage
+}: {
+  onLocateMessage?: (messageId: string) => void
+}) {
+  return (
+    <AgentHistoryLocateContext value={onLocateMessage}>
+      <RightPanelViewport />
+    </AgentHistoryLocateContext>
+  )
 })
 
 function AgentRightPaneHighlightSection({
@@ -1712,6 +1746,11 @@ const AgentRightPaneShortcuts = memo(function AgentRightPaneShortcuts() {
         tab="files"
         label={t('agent.right_pane.tabs.files')}
         icon={<FolderOpen className="size-3.5" />}
+      />
+      <RightPanelShortcut
+        tab="question-history"
+        label={t('chat.question_history')}
+        icon={<History className="size-3.5" />}
       />
       <RightPanelShortcut
         tab={BROWSER_PANE_ID}
