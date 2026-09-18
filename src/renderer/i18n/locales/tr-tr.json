@@ -584,6 +584,8 @@
   "chat.compaction.compacted_plain": "Bağlam sıkıştırıldı",
   "chat.compaction.compacting": "Bağlam sıkıştırılıyor…",
   "chat.conversation.new": "Yeni Sohbet",
+  "chat.conversation_search": "Sohbette ara",
+  "chat.conversation_search_hint": "Soruları ve yanıtları aramak için anahtar kelimeler girin",
   "chat.default.name": "Cherry Asistanı",
   "chat.default.topic.name": "Varsayılan Konuşma",
   "chat.home.welcome_title": "Bugün ne hakkında konuşalım?",

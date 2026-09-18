@@ -584,6 +584,8 @@
   "chat.compaction.compacted_plain": "Context compactat",
   "chat.compaction.compacting": "Compactarea contextului…",
   "chat.conversation.new": "Chat nou",
+  "chat.conversation_search": "Caută în conversație",
+  "chat.conversation_search_hint": "Introdu cuvinte cheie pentru a căuta întrebări și răspunsuri",
   "chat.default.name": "Asistent Cherry",
   "chat.default.topic.name": "Subiect implicit",
   "chat.home.welcome_title": "Despre ce să vorbim astăzi?",

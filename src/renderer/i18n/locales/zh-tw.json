@@ -584,6 +584,8 @@
   "chat.compaction.compacted_plain": "上下文已壓縮",
   "chat.compaction.compacting": "壓縮上下文中…",
   "chat.conversation.new": "新聊天",
+  "chat.conversation_search": "對話內搜尋",
+  "chat.conversation_search_hint": "輸入關鍵字搜尋目前對話的提問和回覆",
   "chat.default.name": "Cherry 助理",
   "chat.default.topic.name": "預設對話",
   "chat.home.welcome_title": "今天我們要談些什麼？",

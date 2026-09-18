@@ -15,6 +15,7 @@ import { useIsActiveTab } from '@renderer/hooks/tab'
 import { findRangesInScope, supportsCustomHighlights } from '@renderer/utils/contentSearch'
 import type { CherryMessagePart } from '@shared/data/types/message'
 
+import { useMessageSearch } from '../MessageSearchContext'
 import type { MessageListItem } from '../types'
 import { computeMessageSearchMatches, type MessageSearchMatch, type MessageTextSearchMatch } from './messageSearch'
 import {
@@ -90,9 +91,12 @@ export const MessageListSearch: FC<Props> = ({
   const pendingNavigationRef = useRef<PendingNavigation | null>(null)
   const settledHighlightFrameRef = useRef<number | null>(null)
 
-  const { enabled, query, caseSensitive, wholeWord, includeUser } = searchState
+  const externalRequest = useMessageSearch()?.request
+  const { enabled, query, caseSensitive, wholeWord, includeUser } = externalRequest
+    ? { enabled: true, query: externalRequest.query, caseSensitive: false, wholeWord: false, includeUser: true }
+    : searchState
   const deferredQuery = useDeferredValue(query)
-  const trimmedQuery = deferredQuery.trim()
+  const trimmedQuery = (externalRequest ? query : deferredQuery).trim()
   const criteriaKey = getCriteriaKey(trimmedQuery, caseSensitive, wholeWord, includeUser)
 
   // Streaming updates the loaded data on every chunk while live messages are
@@ -104,16 +108,19 @@ export const MessageListSearch: FC<Props> = ({
 
   const matches = useMemo(
     () =>
-      enabled && trimmedQuery
-        ? computeMessageSearchMatches(searchMessages, searchParts, trimmedQuery, {
-            caseSensitive,
-            wholeWord,
-            includeUser,
-            renderUserTextAsMarkdown,
-            excludedMessageIds
-          })
-        : EMPTY_MATCHES,
+      externalRequest
+        ? externalRequest.matches
+        : enabled && trimmedQuery
+          ? computeMessageSearchMatches(searchMessages, searchParts, trimmedQuery, {
+              caseSensitive,
+              wholeWord,
+              includeUser,
+              renderUserTextAsMarkdown,
+              excludedMessageIds
+            })
+          : EMPTY_MATCHES,
     [
+      externalRequest,
       caseSensitive,
       enabled,
       excludedMessageIds,
@@ -130,7 +137,7 @@ export const MessageListSearch: FC<Props> = ({
     () => (cursor?.criteriaKey === criteriaKey ? matches.findIndex((match) => match.key === cursor.matchKey) : -1),
     [criteriaKey, cursor, matches]
   )
-  const current = currentIndex >= 0 ? matches[currentIndex] : null
+  const current = externalRequest ? externalRequest.current : currentIndex >= 0 ? matches[currentIndex] : null
   const currentRef = useRef(current)
   currentRef.current = current
 
@@ -336,11 +343,16 @@ export const MessageListSearch: FC<Props> = ({
 
       const scope = scopeRef.current
       if (!scope || !getMountedMessagePartElements(scope).has(match.partId)) {
-        locateMessage(match.messageId)
+        if (externalRequest?.locateMessage) externalRequest.locateMessage(match.messageId)
+        else locateMessage(match.messageId)
       }
     },
-    [criteriaKey, locateMessage, scopeRef]
+    [criteriaKey, externalRequest?.locateMessage, locateMessage, scopeRef]
   )
+
+  useEffect(() => {
+    if (externalRequest?.current) navigateToMatch(externalRequest.current)
+  }, [externalRequest?.current, navigateToMatch])
 
   const step = useCallback(
     (delta: 1 | -1) => {

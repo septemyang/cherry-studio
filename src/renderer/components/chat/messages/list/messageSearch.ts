@@ -73,7 +73,7 @@ function getTopLevelPartEntries(parts: readonly CherryMessagePart[]): PartEntry[
   return parts.flatMap((part, index) => (hasPartParentToolCallId(part) ? [] : [{ part, index }]))
 }
 
-function projectMessageSearchDocuments(
+export function projectMessageSearchDocuments(
   messages: readonly MessageListItem[],
   partsByMessageId: Readonly<Record<string, CherryMessagePart[]>>,
   options: MessageSearchOptions

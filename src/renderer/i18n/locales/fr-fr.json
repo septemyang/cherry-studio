@@ -584,6 +584,8 @@
   "chat.compaction.compacted_plain": "Contexte compacté",
   "chat.compaction.compacting": "Compactage du contexte…",
   "chat.conversation.new": "Nouveau chat",
+  "chat.conversation_search": "Rechercher dans la conversation",
+  "chat.conversation_search_hint": "Saisissez des mots-clés pour rechercher des questions et réponses",
   "chat.default.name": "Assistant Cherry",
   "chat.default.topic.name": "Sujet par défaut",
   "chat.home.welcome_title": "De quoi parlerons-nous aujourd'hui ?",

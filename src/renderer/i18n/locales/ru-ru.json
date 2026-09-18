@@ -584,6 +584,8 @@
   "chat.compaction.compacted_plain": "Контекст сжат",
   "chat.compaction.compacting": "Уплотнение контекста…",
   "chat.conversation.new": "Новый чат",
+  "chat.conversation_search": "Поиск в разговоре",
+  "chat.conversation_search_hint": "Введите ключевые слова для поиска вопросов и ответов",
   "chat.default.name": "Ассистент Cherry",
   "chat.default.topic.name": "Топик по умолчанию",
   "chat.home.welcome_title": "О чём поговорим сегодня?",

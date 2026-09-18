@@ -584,6 +584,8 @@
   "chat.compaction.compacted_plain": "Συμπιεσμένο πλαίσιο",
   "chat.compaction.compacting": "Συμπίεση περιεχομένου…",
   "chat.conversation.new": "Νέα Συνομιλία",
+  "chat.conversation_search": "Αναζήτηση στη συνομιλία",
+  "chat.conversation_search_hint": "Εισαγάγετε λέξεις για αναζήτηση ερωτήσεων και απαντήσεων",
   "chat.default.name": "Βοηθός Cherry",
   "chat.default.topic.name": "Προεπιλεγμένη συνομιλία",
   "chat.home.welcome_title": "Τι θα συζητήσουμε σήμερα;",

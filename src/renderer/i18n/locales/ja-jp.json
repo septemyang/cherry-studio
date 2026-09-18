@@ -584,6 +584,8 @@
   "chat.compaction.compacted_plain": "コンテキストが圧縮されました",
   "chat.compaction.compacting": "コンテキストを圧縮中…",
   "chat.conversation.new": "新しいチャット",
+  "chat.conversation_search": "会話内を検索",
+  "chat.conversation_search_hint": "キーワードを入力して質問と回答を検索",
   "chat.default.name": "Cherry アシスタント",
   "chat.default.topic.name": "デフォルトトピック",
   "chat.home.welcome_title": "今日は何について話しましょうか？",

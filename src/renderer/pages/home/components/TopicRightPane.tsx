@@ -1,9 +1,10 @@
-import { Activity, GitBranch, History } from 'lucide-react'
+import { Activity, GitBranch, History, Search } from 'lucide-react'
 import type { PropsWithChildren } from 'react'
 import { createContext, lazy, Suspense, use, useCallback, useMemo, useRef, useSyncExternalStore } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import type { TopicMessageFlowLiveState } from '@renderer/components/chat/flow'
+import { MessageSearchProvider } from '@renderer/components/chat/messages/MessageSearchContext'
 import { QuestionHistoryPanel } from '@renderer/components/chat/panes/QuestionHistoryPanel'
 import {
   createResourcePaneCapability,
@@ -41,6 +42,7 @@ interface TopicRightPaneViewportCallbacks {
 interface TopicRightPanelScope extends TopicRightPaneMeta {
   branchTitle: string
   developerMode: boolean
+  searchTitle: string
   historyTitle: string
   resourcePane: ResourcePaneConfig | null
   traceTitle: string
@@ -141,6 +143,14 @@ function TopicBranchRightPanel({ active, scope }: RightPanelComponentProps<Topic
   )
 }
 
+function TopicConversationSearchPanel({ active, scope }: RightPanelComponentProps<TopicRightPanelScope>) {
+  const { onLocateMessage } = useTopicRightPaneViewport()
+  if (!active || !scope.topicId) return null
+  return (
+    <QuestionHistoryPanel key={scope.topicId} mode="search" topicId={scope.topicId} onLocateMessage={onLocateMessage} />
+  )
+}
+
 function TopicQuestionHistoryPanel({ active, scope }: RightPanelComponentProps<TopicRightPanelScope>) {
   const { onLocateMessage } = useTopicRightPaneViewport()
   if (!active || !scope.topicId) return null
@@ -181,6 +191,15 @@ const TOPIC_RIGHT_PANEL_CAPABILITIES = [
     })
   },
   TOPIC_TRACE_PANE_CAPABILITY,
+  {
+    component: TopicConversationSearchPanel,
+    resolve: (scope) => ({
+      id: 'conversation-search',
+      instanceKey: 'conversation-search:' + (scope.topicId ?? ''),
+      title: scope.searchTitle,
+      readiness: scope.topicId ? 'ready' : 'unavailable'
+    })
+  },
   {
     component: TopicQuestionHistoryPanel,
     resolve: (scope) => ({
@@ -224,6 +243,7 @@ function TopicRightPaneProvider({
       traceId,
       resourcePane: resourcePane ?? null,
       developerMode: enableDeveloperMode,
+      searchTitle: t('chat.conversation_search'),
       historyTitle: t('chat.question_history'),
       branchTitle: t('chat.message.flow.title'),
       traceTitle: t('trace.label')
@@ -241,7 +261,9 @@ function TopicRightPaneProvider({
       userOpenIntentSeq={userOpenIntentSeq}
       present={present}>
       <ResourcePaneLocateOpener revealRequest={revealRequest} />
-      <TopicBranchLiveStateStoreContext value={storeRef.current}>{children}</TopicBranchLiveStateStoreContext>
+      <MessageSearchProvider key={topicId}>
+        <TopicBranchLiveStateStoreContext value={storeRef.current}>{children}</TopicBranchLiveStateStoreContext>
+      </MessageSearchProvider>
     </RightPanelProvider>
   )
 }
@@ -261,6 +283,11 @@ function TopicRightPaneShortcuts() {
 
   return (
     <>
+      <RightPanelShortcut
+        tab="conversation-search"
+        label={t('chat.conversation_search')}
+        icon={<Search className="size-3.5" />}
+      />
       <RightPanelShortcut
         tab="question-history"
         label={t('chat.question_history')}

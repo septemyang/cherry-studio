@@ -584,6 +584,8 @@
   "chat.compaction.compacted_plain": "已压缩上下文",
   "chat.compaction.compacting": "正在压缩上下文…",
   "chat.conversation.new": "新对话",
+  "chat.conversation_search": "对话内搜索",
+  "chat.conversation_search_hint": "输入关键词搜索当前对话的提问和回复",
   "chat.default.name": "Cherry 助手",
   "chat.default.topic.name": "默认对话",
   "chat.home.welcome_title": "今天想聊点什么？",

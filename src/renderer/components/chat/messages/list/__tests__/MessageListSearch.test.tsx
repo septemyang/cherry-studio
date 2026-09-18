@@ -7,6 +7,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { CherryMessagePart } from '@shared/data/types/message'
 
+import { MessageSearchProvider, useMessageSearch } from '../../MessageSearchContext'
 import type { MessageListItem } from '../../types'
 import { MessageListSearch } from '../MessageListSearch'
 
@@ -77,6 +78,69 @@ function installCustomHighlightsMock() {
 }
 
 describe('MessageListSearch', () => {
+  it('locates the selected sidebar occurrence after mounting and clears highlights on close', async () => {
+    const scope = document.createElement('div')
+    document.body.appendChild(scope)
+    const customHighlights = installCustomHighlights()
+    const locateMessage = vi.fn()
+    const scrollToRange = vi.fn()
+    const matches = [0, 1].map((occurrence) => ({
+      type: 'text' as const,
+      key: `a1-part-0:${occurrence}`,
+      messageId: 'a1',
+      partId: 'a1-part-0',
+      role: 'assistant' as const,
+      occurrence
+    }))
+    function Sidebar() {
+      const search = useMessageSearch()
+      return (
+        <>
+          <button onClick={() => search?.setRequest({ query: 'apple', matches, current: matches[1], locateMessage })}>
+            select second
+          </button>
+          <button onClick={() => search?.setRequest(null)}>close sidebar</button>
+        </>
+      )
+    }
+    const view = render(
+      <MessageSearchProvider>
+        <Sidebar />
+        <MessageListSearch
+          messages={[]}
+          partsByMessageId={{}}
+          renderUserTextAsMarkdown={false}
+          excludedMessageIds={NO_EXCLUDED_MESSAGE_IDS}
+          isStreaming={false}
+          locateMessage={vi.fn()}
+          scrollToRange={scrollToRange}
+          getOuterScroller={() => scope}
+          scopeRef={{ current: scope }}
+        />
+      </MessageSearchProvider>
+    )
+    try {
+      const user = userEvent.setup()
+      await user.click(screen.getByText('select second'))
+      expect(locateMessage).toHaveBeenCalledWith('a1')
+      act(() => {
+        const part = document.createElement('div')
+        part.dataset.messagePartId = 'a1-part-0'
+        part.textContent = 'apple apple'
+        scope.appendChild(part)
+      })
+      await waitFor(() => expect(scrollToRange).toHaveBeenCalledTimes(1))
+      expect((scrollToRange.mock.calls[0][0] as Range).startOffset).toBe(6)
+      await waitFor(() => expect(customHighlights.highlights.has('message-search-current')).toBe(true))
+      await user.click(screen.getByText('close sidebar'))
+      await waitFor(() => expect(customHighlights.highlights.has('message-search-current')).toBe(false))
+    } finally {
+      view.unmount()
+      scope.remove()
+      customHighlights.restore()
+    }
+  })
+
   it('labels icon controls and exposes filter pressed states', async () => {
     const user = userEvent.setup()
     render(

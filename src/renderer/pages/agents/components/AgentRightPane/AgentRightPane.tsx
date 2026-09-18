@@ -14,7 +14,7 @@ import {
   Waypoints,
   Workflow
 } from 'lucide-react'
-import { Globe2, History } from 'lucide-react'
+import { Globe2, History, Search } from 'lucide-react'
 import type { ReactNode } from 'react'
 import {
   createContext,
@@ -44,6 +44,7 @@ import { loggerService } from '@logger'
 import { AgentContextUsageSummary } from '@renderer/components/chat/agent/AgentContextUsageSummary'
 import MessageList from '@renderer/components/chat/messages/MessageList'
 import { MessageListProvider } from '@renderer/components/chat/messages/MessageListProvider'
+import { MessageSearchProvider } from '@renderer/components/chat/messages/MessageSearchContext'
 import type { MessageStreamingLayers } from '@renderer/components/chat/messages/types'
 import {
   type ArtifactPaneFileSelection,
@@ -264,6 +265,7 @@ interface AgentRightPanelScope {
   hasSystemWorkspaceFiles: boolean
   filesTitle: string
   flowTab: AgentFlowTab | null
+  searchTitle: string
   historyTitle: string
   meta: AgentRightPaneMeta
   resourcePane: ResourcePaneConfig | null
@@ -805,6 +807,7 @@ function AgentRightPaneStateProvider({
   )
   const scope = useMemo<AgentRightPanelScope>(
     () => ({
+      searchTitle: t('chat.conversation_search'),
       historyTitle: t('chat.question_history'),
       browserTitle: t('agent.right_pane.tabs.browser'),
       developerMode: enableDeveloperMode,
@@ -847,7 +850,7 @@ function AgentRightPaneStateProvider({
                 setFileTreeExpandedIds={setFileTreeExpandedIds}
                 setFileTreeSearchKeyword={setFileTreeSearchKeyword}
                 workspaceCurrent={fileWorkspace.key === workspaceKey}>
-                {children}
+                <MessageSearchProvider key={sessionId}>{children}</MessageSearchProvider>
               </AgentRightPaneActionsProvider>
               <ConfirmDialog
                 open={showDirtyLeaveConfirmation}
@@ -1520,6 +1523,15 @@ const AGENT_RIGHT_PANEL_CAPABILITIES = [
   },
   AGENT_BROWSER_PANE_CAPABILITY,
   {
+    component: AgentConversationSearchPanel,
+    resolve: (scope) => ({
+      id: 'conversation-search',
+      instanceKey: 'conversation-search:' + (scope.meta.sessionId ?? ''),
+      title: scope.searchTitle,
+      readiness: scope.meta.sessionId ? scope.meta.conversationState : 'unavailable'
+    })
+  },
+  {
     component: AgentQuestionHistoryPanel,
     resolve: (scope) => ({
       id: 'question-history',
@@ -1554,6 +1566,19 @@ const AGENT_RIGHT_PANEL_CAPABILITIES = [
 ] satisfies readonly RightPanelCapability<AgentRightPanelScope>[]
 
 const AgentHistoryLocateContext = createContext<((messageId: string) => void) | undefined>(undefined)
+
+function AgentConversationSearchPanel({ active, scope }: RightPanelComponentProps<AgentRightPanelScope>) {
+  const onLocateMessage = use(AgentHistoryLocateContext)
+  if (!active || !scope.meta.sessionId) return null
+  return (
+    <QuestionHistoryPanel
+      key={scope.meta.sessionId}
+      mode="search"
+      sessionId={scope.meta.sessionId}
+      onLocateMessage={onLocateMessage}
+    />
+  )
+}
 
 function AgentQuestionHistoryPanel({ active, scope }: RightPanelComponentProps<AgentRightPanelScope>) {
   const onLocateMessage = use(AgentHistoryLocateContext)
@@ -1746,6 +1771,11 @@ const AgentRightPaneShortcuts = memo(function AgentRightPaneShortcuts() {
         tab="files"
         label={t('agent.right_pane.tabs.files')}
         icon={<FolderOpen className="size-3.5" />}
+      />
+      <RightPanelShortcut
+        tab="conversation-search"
+        label={t('chat.conversation_search')}
+        icon={<Search className="size-3.5" />}
       />
       <RightPanelShortcut
         tab="question-history"
