@@ -62,9 +62,11 @@ export function QuestionHistoryPanel({ mode = 'history', topicId, sessionId, onL
   const matches = useMemo(
     () =>
       questions.flatMap((message) => {
+        const role = message.role
+        if (role !== 'user' && role !== 'assistant') return []
         const item: MessageListItem = {
           id: message.id,
-          role: message.role,
+          role,
           status: message.status,
           topicId: topicId ?? sessionId ?? '',
           createdAt: message.createdAt
@@ -95,7 +97,7 @@ export function QuestionHistoryPanel({ mode = 'history', topicId, sessionId, onL
               key: `${document.partId}:${occurrence}`,
               messageId: message.id,
               partId: document.partId,
-              role: message.role,
+              role,
               occurrence
             }
             return {

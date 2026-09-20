@@ -52,10 +52,9 @@ beforeEach(() => {
 function installCustomHighlightsMock() {
   const cssDescriptor = Object.getOwnPropertyDescriptor(globalThis, 'CSS')
   const highlightDescriptor = Object.getOwnPropertyDescriptor(globalThis, 'Highlight')
-  const highlights = {
-    delete: vi.fn(),
-    set: vi.fn()
-  }
+  const highlights = new Map<string, unknown>()
+  vi.spyOn(highlights, 'delete')
+  vi.spyOn(highlights, 'set')
 
   Object.defineProperty(globalThis, 'CSS', {
     configurable: true,
@@ -81,7 +80,7 @@ describe('MessageListSearch', () => {
   it('locates the selected sidebar occurrence after mounting and clears highlights on close', async () => {
     const scope = document.createElement('div')
     document.body.appendChild(scope)
-    const customHighlights = installCustomHighlights()
+    const customHighlights = installCustomHighlightsMock()
     const locateMessage = vi.fn()
     const scrollToRange = vi.fn()
     const matches = [0, 1].map((occurrence) => ({
@@ -283,7 +282,7 @@ describe('MessageListSearch', () => {
       await waitFor(() => expect(next).toBeEnabled())
       await waitFor(() => expect(customHighlights.highlights.set).toHaveBeenCalled())
       const scanCountBeforeNavigation = createTreeWalkerSpy.mock.calls.length
-      customHighlights.highlights.set.mockClear()
+      vi.mocked(customHighlights.highlights.set).mockClear()
 
       await user.click(next)
       await waitFor(() => expect(scrollToRange).toHaveBeenCalledTimes(1))
