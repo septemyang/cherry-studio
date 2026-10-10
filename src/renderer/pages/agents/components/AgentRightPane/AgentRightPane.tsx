@@ -155,14 +155,9 @@ const TracePane = lazy(() =>
   import('@renderer/components/chat/trace/TracePane').then((module) => ({ default: module.TracePane }))
 )
 
-function containsFile(root: TreeDirRoot | null): boolean {
-  let found = false
-  root?.walk((node) => {
-    if (!node.isTreeFile()) return
-    found = true
-    return false
-  })
-  return found
+/** Any non-ignored entry counts: a directory-only workspace is still browsable by expanding it. */
+function containsEntry(root: TreeDirRoot | null): boolean {
+  return (root?.childCount ?? 0) > 0
 }
 
 function getFlowTabValue(toolCallId: string): string {
@@ -270,7 +265,7 @@ interface AgentRightPaneActions {
 interface AgentRightPanelScope {
   browserTitle: string
   developerMode: boolean
-  hasSystemWorkspaceFiles: boolean
+  hasSystemWorkspaceEntries: boolean
   filesTitle: string
   flowTab: AgentFlowTab | null
   searchTitle: string
@@ -683,9 +678,9 @@ function AgentRightPaneStateProvider({
     systemWorkspacePath,
     ARTIFACT_MISSING_WORKSPACE_TREE_OPTIONS
   )
-  const hasSystemWorkspaceFiles = useMemo(() => {
+  const hasSystemWorkspaceEntries = useMemo(() => {
     void systemWorkspaceTreeVersion
-    return containsFile(systemWorkspaceRoot)
+    return containsEntry(systemWorkspaceRoot)
   }, [systemWorkspaceRoot, systemWorkspaceTreeVersion])
 
   useEffect(() => {
@@ -846,7 +841,7 @@ function AgentRightPaneStateProvider({
       historyTitle: t('chat.question_history'),
       browserTitle: t('agent.right_pane.tabs.browser'),
       developerMode: enableDeveloperMode,
-      hasSystemWorkspaceFiles,
+      hasSystemWorkspaceEntries,
       filesTitle: t('agent.right_pane.tabs.files'),
       flowTab,
       previousFlowTab,
@@ -856,7 +851,7 @@ function AgentRightPaneStateProvider({
       statusTitle: t('agent.right_pane.tabs.status'),
       traceTitle: t('trace.label')
     }),
-    [enableDeveloperMode, flowTab, previousFlowTab, goBackFlow, hasSystemWorkspaceFiles, meta, resourcePane, t]
+    [enableDeveloperMode, flowTab, previousFlowTab, goBackFlow, hasSystemWorkspaceEntries, meta, resourcePane, t]
   )
 
   return (
@@ -1594,7 +1589,7 @@ function AgentTraceRightPanel({ active, scope }: RightPanelComponentProps<AgentR
 
 function resolveAgentFilesReadiness(scope: AgentRightPanelScope): RightPanelReadiness {
   if (scope.meta.conversationState !== 'ready') return scope.meta.conversationState
-  if (scope.meta.workspaceType === AGENT_WORKSPACE_TYPE.SYSTEM && !scope.hasSystemWorkspaceFiles) {
+  if (scope.meta.workspaceType === AGENT_WORKSPACE_TYPE.SYSTEM && !scope.hasSystemWorkspaceEntries) {
     return 'unavailable'
   }
   return scope.meta.workspacePath ? 'ready' : 'unavailable'
