@@ -672,7 +672,7 @@ describe('ComposerSurface', () => {
   it('uses the card color with a subtle shadow', () => {
     render(<ComposerSurface {...baseProps} />)
 
-    expect(document.getElementById('inputbar')).toHaveClass('bg-card', 'shadow-sm')
+    expect(document.getElementById('inputbar')).toHaveClass('bg-composer-surface', 'shadow-sm')
     expect(document.getElementById('inputbar')).not.toHaveClass('opacity-95')
   })
 
@@ -1198,6 +1198,14 @@ describe('ComposerSurface', () => {
     expect(inputbar).not.toHaveClass('expanded')
   })
 
+  it('leaves sizing to an embedding host: no resize handle or expand control', () => {
+    render(<ComposerSurface {...baseProps} embedded />)
+
+    expect(screen.queryByRole('separator', { name: 'chat.input.resize_height' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'chat.input.expand' })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'chat.input.send' })).toBeInTheDocument()
+  })
+
   it('renders the resize handle and expand control in the inputbar corner', () => {
     render(<Harness />)
 
@@ -1394,6 +1402,37 @@ describe('ComposerSurface', () => {
 
     expect(document.querySelector('[data-composer-editing-header]')).toBeNull()
     expect(document.querySelector('[data-composer-expand-corner]')).not.toBeNull()
+  })
+
+  it('keeps a text drop inside the reasoning textarea', () => {
+    const onChange = vi.fn()
+    const onComposerDrop = vi.fn()
+
+    render(
+      <div onDrop={onComposerDrop}>
+        <ComposerSurface
+          {...baseProps}
+          editingState={{
+            messageId: 'message-1',
+            onCancel: vi.fn(),
+            reasoning: {
+              value: 'old thinking',
+              label: 'thinking',
+              actionLabel: 'edit thinking',
+              title: 'edit thinking',
+              placeholder: 'thinking',
+              hint: 'hint',
+              onChange
+            }
+          }}
+        />
+      </div>
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'thinking' }))
+    fireEvent.drop(screen.getByLabelText('thinking'), { dataTransfer: { getData: () => 'dropped' } })
+
+    expect(onComposerDrop).not.toHaveBeenCalled()
   })
 
   it('focuses the editor when an editing session starts', async () => {
@@ -3288,7 +3327,7 @@ describe('ComposerSurface', () => {
     expect(selectFile).not.toHaveBeenCalled()
   })
 
-  it('renders image file tokens as chips with icon-sized thumbnails inside the editable composer', async () => {
+  it('renders image file tokens with type icons inside the editable composer', async () => {
     const imageToken = {
       id: 'file:image-1',
       kind: 'file' as const,
@@ -3321,7 +3360,8 @@ describe('ComposerSurface', () => {
 
     const token = container.querySelector('[data-composer-token-kind="file"]')
     expect(token).toHaveTextContent('preview.png')
-    expect(container.querySelector('[data-file-token-icon-thumbnail]')).toBeInTheDocument()
+    expect(token?.querySelector('img')).toBeNull()
+    expect(token?.querySelector('[data-file-token-icon="image"]')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'common.delete' })).toBeInTheDocument()
   })
 

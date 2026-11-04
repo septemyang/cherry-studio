@@ -34,6 +34,7 @@ interface Props {
   messages: MessageListItem[]
   partsByMessageId: Record<string, CherryMessagePart[]>
   renderUserTextAsMarkdown: boolean
+  keepIntermediateAssistantText?: boolean
   excludedMessageIds: ReadonlySet<string>
   isStreaming: boolean
   /** Virtua-aware scroll to the message's visual group. */
@@ -76,6 +77,7 @@ export const MessageListSearch: FC<Props> = ({
   messages,
   partsByMessageId,
   renderUserTextAsMarkdown,
+  keepIntermediateAssistantText,
   excludedMessageIds,
   isStreaming,
   locateMessage,
@@ -116,6 +118,7 @@ export const MessageListSearch: FC<Props> = ({
               wholeWord,
               includeUser,
               renderUserTextAsMarkdown,
+              keepIntermediateAssistantText,
               excludedMessageIds
             })
           : EMPTY_MATCHES,
@@ -125,6 +128,7 @@ export const MessageListSearch: FC<Props> = ({
       enabled,
       excludedMessageIds,
       includeUser,
+      keepIntermediateAssistantText,
       searchMessages,
       searchParts,
       renderUserTextAsMarkdown,
